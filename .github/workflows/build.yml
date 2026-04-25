@@ -1,4 +1,4 @@
-name: 小白正则 Build APK
+name: 小白正则 Build & Release
 
 on:
   push:
@@ -31,11 +31,102 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Run analyzer
+        run: flutter analyze --no-fatal-infos
+
       - name: Build APK
         run: flutter build apk --release
+
+      - name: Build Web
+        run: flutter build web --release
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: xiaobai-regex-release-apk
+          name: xiaobai-regex-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiaobai-regex-web
+          path: build/web/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(grep 'version:' pubspec.yaml | head -1 | sed 's/version: //')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: xiaobai-regex-apk
+          path: ./release/
+
+      - name: Download Web
+        uses: actions/download-artifact@v4
+        with:
+          name: xiaobai-regex-web
+          path: ./release/web/
+
+      - name: Package Web
+        run: |
+          cd release
+          tar -czf xiaobai-regex-web.tar.gz -C web .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: 小白正则 v${{ steps.version.outputs.version }}
+          body: |
+            ## 小白正则 v${{ steps.version.outputs.version }}
+
+            ### 下载
+            - **Android APK**: `app-release.apk` 下载后安装到手机
+            - **Web 版**: `xiaobai-regex-web.tar.gz` 解压后部署到任意静态服务器
+
+            ### 功能
+            - 点击中文标签拼接正则表达式
+            - 自定义标签增删、拖拽排序
+            - 按使用次数排序和尺寸缩放
+            - 正则语法检查与自然语言解释
+            - 数据本地持久化存储
+          draft: false
+          prerelease: false
+          files: |
+            release/app-release.apk
+            release/xiaobai-regex-web.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-web:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download Web
+        uses: actions/download-artifact@v4
+        with:
+          name: xiaobai-regex-web
+          path: ./web-build/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web-build
+          publish_branch: gh-pages

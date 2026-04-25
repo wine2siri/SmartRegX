@@ -32,6 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  bool get _isWideScreen {
+    return MediaQuery.of(context).size.width > 700;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,29 +45,68 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              RegexEditor(
-                regex: _regex,
-                onChanged: _onRegexChanged,
-                onClear: _onClear,
-              ),
-              const SizedBox(height: 12),
-              RegexResultPanel(regex: _regex),
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 8),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: TagManagementPanel(onTagTap: _onTagTap),
-                ),
-              ),
-            ],
+        child: _isWideScreen ? _buildWideLayout() : _buildNarrowLayout(),
+      ),
+    );
+  }
+
+  Widget _buildNarrowLayout() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          RegexEditor(
+            regex: _regex,
+            onChanged: _onRegexChanged,
+            onClear: _onClear,
           ),
-        ),
+          const SizedBox(height: 12),
+          RegexResultPanel(regex: _regex),
+          const SizedBox(height: 16),
+          const Divider(),
+          const SizedBox(height: 8),
+          Expanded(
+            child: SingleChildScrollView(
+              child: TagManagementPanel(onTagTap: _onTagTap),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWideLayout() {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                RegexEditor(
+                  regex: _regex,
+                  onChanged: _onRegexChanged,
+                  onClear: _onClear,
+                ),
+                const SizedBox(height: 16),
+                RegexResultPanel(regex: _regex),
+              ],
+            ),
+          ),
+          const SizedBox(width: 24),
+          const VerticalDivider(width: 1),
+          const SizedBox(width: 24),
+          Expanded(
+            flex: 5,
+            child: SingleChildScrollView(
+              child: TagManagementPanel(onTagTap: _onTagTap),
+            ),
+          ),
+        ],
       ),
     );
   }
