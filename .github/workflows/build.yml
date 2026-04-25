@@ -71,7 +71,8 @@ jobs:
       - name: Get version
         id: version
         run: |
-          VERSION=$(grep 'version:' pubspec.yaml | head -1 | sed 's/version: //')
+          FULL_VERSION=$(grep 'version:' pubspec.yaml | head -1 | sed 's/version: //')
+          VERSION=${FULL_VERSION%%+*}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download APK
