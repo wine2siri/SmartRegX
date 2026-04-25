@@ -4,18 +4,18 @@ import 'providers/tag_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() {
-  runApp(const SmartRegXApp());
+  runApp(const XiaobaiRegexApp());
 }
 
-class SmartRegXApp extends StatelessWidget {
-  const SmartRegXApp({super.key});
+class XiaobaiRegexApp extends StatelessWidget {
+  const XiaobaiRegexApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => TagProvider()..loadTags(),
       child: MaterialApp(
-        title: 'SmartRegX',
+        title: '小白正则',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorSchemeSeed: const Color(0xFF6750A4),

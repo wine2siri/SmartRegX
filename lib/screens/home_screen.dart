@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../models/regex_tag.dart';
-import '../providers/tag_provider.dart';
 import '../widgets/regex_editor.dart';
 import '../widgets/regex_result_panel.dart';
 import '../widgets/tag_management_panel.dart';
@@ -38,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SmartRegX'),
+        title: const Text('小白正则'),
         centerTitle: true,
         elevation: 0,
       ),

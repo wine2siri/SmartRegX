@@ -194,7 +194,7 @@ class RegexExplainer {
       final max = m.group(3);
       if (!hasComma) return '出现$min次';
       if (max == null || max.isEmpty) return '出现至少$min次';
-      return '出现${min}到$max次';
+      return '出现$min到$max次';
     }
     return value;
   }

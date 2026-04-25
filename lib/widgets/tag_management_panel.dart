@@ -16,8 +16,6 @@ class TagManagementPanel extends StatefulWidget {
 }
 
 class _TagManagementPanelState extends State<TagManagementPanel> {
-  int? _draggingIndex;
-
   @override
   Widget build(BuildContext context) {
     return Consumer<TagProvider>(
@@ -95,8 +93,8 @@ class _TagManagementPanelState extends State<TagManagementPanel> {
               onDelete: () => provider.removeTag(tag.id),
             ),
           ),
-          onDragStarted: () => setState(() => _draggingIndex = index),
-          onDragEnd: (_) => setState(() => _draggingIndex = null),
+          onDragStarted: () {},
+          onDragEnd: (_) {},
           child: DragTarget<int>(
             onWillAcceptWithDetails: (details) {
               return details.data != index;

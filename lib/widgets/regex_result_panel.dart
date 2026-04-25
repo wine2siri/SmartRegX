@@ -69,7 +69,7 @@ class RegexResultPanel extends StatelessWidget {
           if (!isValid) ...[
             const SizedBox(height: 8),
             Text(
-              '位置${error!.position}: ${error.message}',
+              '位置${error.position}: ${error.message}',
               style: TextStyle(
                 fontSize: 13,
                 color: theme.colorScheme.error,

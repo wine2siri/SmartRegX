@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:smart_regex/services/regex_validator.dart';
-import 'package:smart_regex/services/regex_explainer.dart';
+import 'package:xiaobai_regex/services/regex_validator.dart';
+import 'package:xiaobai_regex/services/regex_explainer.dart';
 
 void main() {
   group('RegexValidator', () {
