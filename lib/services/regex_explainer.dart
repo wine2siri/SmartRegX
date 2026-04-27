@@ -1,3 +1,9 @@
+class DetailedItem {
+  final String token;
+  final String meaning;
+  DetailedItem(this.token, this.meaning);
+}
+
 class RegexExplainer {
   static String explain(String pattern) {
     if (pattern.isEmpty) return '';
@@ -10,6 +16,16 @@ class RegexExplainer {
       return parts.join('，');
     } catch (_) {
       return '无法解析该正则表达式';
+    }
+  }
+
+  static List<DetailedItem> explainDetailed(String pattern) {
+    if (pattern.isEmpty) return [];
+    try {
+      final tokens = _tokenize(pattern);
+      return tokens.map((t) => DetailedItem(t.value, _explainToken(t))).toList();
+    } catch (_) {
+      return [DetailedItem(pattern, '无法解析')];
     }
   }
 
@@ -30,6 +46,18 @@ class RegexExplainer {
         if ('dDwWsSbB'.contains(next)) {
           tokens.add(_Token(_TokenType.shorthand, '\\$next'));
           i += 2;
+        } else if (next == 'n') {
+          tokens.add(_Token(_TokenType.escaped, '\\n'));
+          i += 2;
+        } else if (next == 't') {
+          tokens.add(_Token(_TokenType.escaped, '\\t'));
+          i += 2;
+        } else if (next == 'r') {
+          tokens.add(_Token(_TokenType.escaped, '\\r'));
+          i += 2;
+        } else if (next == '1' || next == '2' || next == '3') {
+          tokens.add(_Token(_TokenType.backref, '\\$next'));
+          i += 2;
         } else {
           tokens.add(_Token(_TokenType.escaped, '\\$next'));
           i += 2;
@@ -42,10 +70,10 @@ class RegexExplainer {
         final groupInfo = _parseGroup(pattern, i);
         tokens.add(_Token(_TokenType.group, groupInfo.text));
         i = groupInfo.endIndex;
-      } else if (ch == '|' ) {
+      } else if (ch == '|') {
         tokens.add(_Token(_TokenType.alternation, '|'));
         i++;
-      } else if (ch == '.' ) {
+      } else if (ch == '.') {
         tokens.add(_Token(_TokenType.dot, '.'));
         i++;
       } else if ('*+?'.contains(ch)) {
@@ -54,8 +82,7 @@ class RegexExplainer {
       } else if (ch == '{') {
         final end = pattern.indexOf('}', i);
         if (end != -1) {
-          tokens.add(
-              _Token(_TokenType.quantifier, pattern.substring(i, end + 1)));
+          tokens.add(_Token(_TokenType.quantifier, pattern.substring(i, end + 1)));
           i = end + 1;
         } else {
           tokens.add(_Token(_TokenType.literal, ch));
@@ -83,7 +110,19 @@ class RegexExplainer {
     var i = start + 1;
     if (i < pattern.length && pattern[i] == '?') {
       i++;
-      if (i < pattern.length && ':!=<>'.contains(pattern[i])) i++;
+      if (i < pattern.length) {
+        if (pattern[i] == '<' && i + 1 < pattern.length && pattern[i + 1] == '=') {
+          i += 2;
+        } else if (pattern[i] == '<' && i + 1 < pattern.length && pattern[i + 1] == '!') {
+          i += 2;
+        } else if (pattern[i] == 'P' && i + 1 < pattern.length && pattern[i + 1] == '<') {
+          i += 2;
+          while (i < pattern.length && pattern[i] != '>') { i++; }
+          if (i < pattern.length) i++;
+        } else if (':!=<>'.contains(pattern[i])) {
+          i++;
+        }
+      }
     }
     var depth = 1;
     while (i < pattern.length && depth > 0) {
@@ -108,6 +147,9 @@ class RegexExplainer {
         return _explainShorthand(token.value);
       case _TokenType.escaped:
         final ch = token.value.length > 1 ? token.value[1] : token.value;
+        if (token.value == '\\n') return '换行符';
+        if (token.value == '\\t') return '制表符';
+        if (token.value == '\\r') return '回车符';
         return '字符"$ch"';
       case _TokenType.charClass:
         return _explainCharClass(token.value);
@@ -121,12 +163,14 @@ class RegexExplainer {
         return _explainQuantifier(token.value);
       case _TokenType.literal:
         return '字符"${token.value}"';
+      case _TokenType.backref:
+        return '引用第${token.value[1]}个分组';
     }
   }
 
   static String _explainShorthand(String value) {
     const map = {
-      '\\d': '数字',
+      '\\d': '任意数字',
       '\\D': '非数字',
       '\\w': '字母数字下划线',
       '\\W': '非字母数字下划线',
@@ -149,8 +193,16 @@ class RegexExplainer {
     final buf = StringBuffer();
     if (negated) buf.write('非');
 
-    if (inner == '\\u4e00-\\u9fa5' || inner == 'u4e00-u9fa5') {
+    if (inner == r'\u4e00-\u9fa5' || inner == 'u4e00-u9fa5') {
       buf.write('中文字符');
+    } else if (inner == 'a-zA-Z') {
+      buf.write('任意字母');
+    } else if (inner == 'a-z') {
+      buf.write('小写字母');
+    } else if (inner == 'A-Z') {
+      buf.write('大写字母');
+    } else if (inner == '0-9') {
+      buf.write('数字');
     } else if (inner.contains('-') && !inner.startsWith('-')) {
       final parts = inner.split('-');
       if (parts.length == 2) {
@@ -173,11 +225,27 @@ class RegexExplainer {
     }
     if (value.startsWith('(?=')) {
       final inner = value.substring(3, value.length - 1);
-      return '正向预查（后面跟着${explain(inner)}）';
+      return '前面有（后面跟着${explain(inner)}）';
     }
     if (value.startsWith('(?!')) {
       final inner = value.substring(3, value.length - 1);
-      return '负向预查（后面不跟着${explain(inner)}）';
+      return '前面没有（后面不跟着${explain(inner)}）';
+    }
+    if (value.startsWith('(?<=')) {
+      final inner = value.substring(4, value.length - 1);
+      return '后面有（前面是${explain(inner)}）';
+    }
+    if (value.startsWith('(?<!')) {
+      final inner = value.substring(4, value.length - 1);
+      return '后面没有（前面不是${explain(inner)}）';
+    }
+    if (value.startsWith('(?P<')) {
+      final nameEnd = value.indexOf('>');
+      if (nameEnd != -1) {
+        final name = value.substring(4, nameEnd);
+        final inner = value.substring(nameEnd + 1, value.length - 1);
+        return '命名分组"$name"（${explain(inner)}）';
+      }
     }
     final inner = value.substring(1, value.length - 1);
     return '分组（${explain(inner)}）';
@@ -192,8 +260,8 @@ class RegexExplainer {
       final min = m.group(1)!;
       final hasComma = m.group(2) != null;
       final max = m.group(3);
-      if (!hasComma) return '出现$min次';
-      if (max == null || max.isEmpty) return '出现至少$min次';
+      if (!hasComma) return '恰好出现$min次';
+      if (max == null || max.isEmpty) return '至少出现$min次';
       return '出现$min到$max次';
     }
     return value;
@@ -210,6 +278,7 @@ enum _TokenType {
   dot,
   quantifier,
   literal,
+  backref,
 }
 
 class _Token {
