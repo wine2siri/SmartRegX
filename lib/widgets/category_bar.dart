@@ -18,9 +18,9 @@ class CategoryBar extends StatelessWidget {
       height: 44,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: t.surfaceColor.withValues(alpha: 0.6),
+        color: t.surfaceColor.withOpacity(0.6),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: t.chipBorder.withValues(alpha: 0.3)),
+        border: Border.all(color: t.chipBorder.withOpacity(0.3)),
       ),
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -45,7 +45,7 @@ class CategoryBar extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: isSelected ? t.accentColor.withValues(alpha: 0.2) : Colors.transparent,
+            color: isSelected ? t.accentColor.withOpacity(0.2) : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isSelected ? t.accentColor : Colors.transparent,

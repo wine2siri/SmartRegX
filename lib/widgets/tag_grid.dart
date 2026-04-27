@@ -62,9 +62,9 @@ class TagGrid extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: t.accentColor.withValues(alpha: 0.15),
+                    color: t.accentColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: t.accentColor.withValues(alpha: 0.3)),
+                    border: Border.all(color: t.accentColor.withOpacity(0.3)),
                   ),
                   child: Text(tag.label, style: TextStyle(color: t.accentColor, fontWeight: FontWeight.w600)),
                 ),
@@ -103,7 +103,7 @@ class TagGrid extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               '分类: ${tag.category.icon} ${tag.category.label}',
-              style: TextStyle(color: t.textSecondary.withValues(alpha: 0.7), fontSize: 12),
+              style: TextStyle(color: t.textSecondary.withOpacity(0.7), fontSize: 12),
             ),
           ],
         ),
@@ -139,15 +139,15 @@ class _TagCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: t.chipBg.withValues(alpha: 0.8),
+          color: t.chipBg.withOpacity(0.8),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: hasWarning ? t.errorColor.withValues(alpha: 0.3) : t.chipBorder.withValues(alpha: 0.5),
+            color: hasWarning ? t.errorColor.withOpacity(0.3) : t.chipBorder.withOpacity(0.5),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: t.neonGlow.withValues(alpha: 0.03),
+              color: t.neonGlow.withOpacity(0.03),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -169,7 +169,7 @@ class _TagCard extends StatelessWidget {
               tag.pattern,
               style: TextStyle(
                 fontFamily: 'monospace',
-                color: t.accentColor.withValues(alpha: 0.7),
+                color: t.accentColor.withOpacity(0.7),
                 fontSize: 10,
               ),
             ),

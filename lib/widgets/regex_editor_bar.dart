@@ -57,11 +57,11 @@ class _RegexEditorBarState extends State<RegexEditorBar> {
 
     return Container(
       decoration: BoxDecoration(
-        color: t.surfaceColor.withValues(alpha: 0.95),
+        color: t.surfaceColor.withOpacity(0.95),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border(top: BorderSide(color: t.accentColor.withValues(alpha: 0.2), width: 1)),
+        border: Border(top: BorderSide(color: t.accentColor.withOpacity(0.2), width: 1)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, -2)),
+          BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, -2)),
         ],
       ),
       child: Column(
@@ -71,7 +71,7 @@ class _RegexEditorBarState extends State<RegexEditorBar> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              color: t.errorColor.withValues(alpha: 0.1),
+              color: t.errorColor.withOpacity(0.1),
               child: Text(
                 '位置${error!.position}: ${error.message}',
                 style: TextStyle(color: t.errorColor, fontSize: 11),
@@ -88,7 +88,7 @@ class _RegexEditorBarState extends State<RegexEditorBar> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: t.successColor,
-                      boxShadow: [BoxShadow(color: t.successColor.withValues(alpha: 0.5), blurRadius: 4)],
+                      boxShadow: [BoxShadow(color: t.successColor.withOpacity(0.5), blurRadius: 4)],
                     ),
                   )
                 else if (widget.regex.isNotEmpty)
@@ -98,7 +98,7 @@ class _RegexEditorBarState extends State<RegexEditorBar> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: t.errorColor,
-                      boxShadow: [BoxShadow(color: t.errorColor.withValues(alpha: 0.5), blurRadius: 4)],
+                      boxShadow: [BoxShadow(color: t.errorColor.withOpacity(0.5), blurRadius: 4)],
                     ),
                   ),
                 const SizedBox(width: 8),
@@ -214,7 +214,7 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = themeData;
-    final color = isDestructive ? t.errorColor.withValues(alpha: 0.8) : t.textSecondary;
+    final color = isDestructive ? t.errorColor.withOpacity(0.8) : t.textSecondary;
 
     return GestureDetector(
       onTap: onTap,

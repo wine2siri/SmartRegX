@@ -18,11 +18,11 @@ class ExplanationView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.code, size: 48, color: t.textSecondary.withValues(alpha: 0.3)),
+            Icon(Icons.code, size: 48, color: t.textSecondary.withOpacity(0.3)),
             const SizedBox(height: 12),
             Text('在编辑Tab中拼接正则表达式', style: TextStyle(color: t.textSecondary, fontSize: 14)),
             const SizedBox(height: 4),
-            Text('这里将显示逐条解释', style: TextStyle(color: t.textSecondary.withValues(alpha: 0.6), fontSize: 12)),
+            Text('这里将显示逐条解释', style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 12)),
           ],
         ),
       );
@@ -34,7 +34,7 @@ class ExplanationView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 48, color: t.errorColor.withValues(alpha: 0.5)),
+            Icon(Icons.error_outline, size: 48, color: t.errorColor.withOpacity(0.5)),
             const SizedBox(height: 12),
             Text('正则语法有误', style: TextStyle(color: t.errorColor, fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
@@ -55,8 +55,8 @@ class ExplanationView extends StatelessWidget {
           decoration: BoxDecoration(
             color: t.editorBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: t.accentColor.withValues(alpha: 0.3)),
-            boxShadow: [BoxShadow(color: t.neonGlow.withValues(alpha: 0.05), blurRadius: 8)],
+            border: Border.all(color: t.accentColor.withOpacity(0.3)),
+            boxShadow: [BoxShadow(color: t.neonGlow.withOpacity(0.05), blurRadius: 8)],
           ),
           child: Text(
             regex,
@@ -72,7 +72,7 @@ class ExplanationView extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: t.surfaceColorLight.withValues(alpha: 0.5),
+            color: t.surfaceColorLight.withOpacity(0.5),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -120,9 +120,9 @@ class _ExplanationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: t.chipBg.withValues(alpha: 0.6),
+        color: t.chipBg.withOpacity(0.6),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: t.chipBorder.withValues(alpha: 0.3)),
+        border: Border.all(color: t.chipBorder.withOpacity(0.3)),
       ),
       child: Row(
         children: [
@@ -132,7 +132,7 @@ class _ExplanationCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: t.editorBg,
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: t.accentColor.withValues(alpha: 0.2)),
+              border: Border.all(color: t.accentColor.withOpacity(0.2)),
             ),
             child: Text(
               token,
@@ -146,7 +146,7 @@ class _ExplanationCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Icon(Icons.arrow_forward, color: t.textSecondary.withValues(alpha: 0.4), size: 14),
+          Icon(Icons.arrow_forward, color: t.textSecondary.withOpacity(0.4), size: 14),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

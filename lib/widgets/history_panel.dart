@@ -22,11 +22,11 @@ class HistoryPanel extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.history, size: 48, color: t.textSecondary.withValues(alpha: 0.3)),
+            Icon(Icons.history, size: 48, color: t.textSecondary.withOpacity(0.3)),
             const SizedBox(height: 12),
             Text('暂无历史记录', style: TextStyle(color: t.textSecondary, fontSize: 14)),
             const SizedBox(height: 4),
-            Text('保存正则后会出现在这里', style: TextStyle(color: t.textSecondary.withValues(alpha: 0.6), fontSize: 12)),
+            Text('保存正则后会出现在这里', style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 12)),
           ],
         ),
       );
@@ -85,9 +85,9 @@ class _HistoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: t.chipBg.withValues(alpha: 0.6),
+        color: t.chipBg.withOpacity(0.6),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: t.chipBorder.withValues(alpha: 0.3)),
+        border: Border.all(color: t.chipBorder.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +103,7 @@ class _HistoryCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: t.accentColor.withValues(alpha: 0.15),
+                            color: t.accentColor.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -115,10 +115,10 @@ class _HistoryCard extends StatelessWidget {
                       ],
                       Text(
                         timeStr,
-                        style: TextStyle(color: t.textSecondary.withValues(alpha: 0.6), fontSize: 10),
+                        style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 10),
                       ),
                       const SizedBox(width: 4),
-                      Icon(Icons.edit, size: 10, color: t.textSecondary.withValues(alpha: 0.4)),
+                      Icon(Icons.edit, size: 10, color: t.textSecondary.withOpacity(0.4)),
                     ],
                   ),
                 ),
@@ -134,7 +134,7 @@ class _HistoryCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: t.editorBg,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: t.accentColor.withValues(alpha: 0.15)),
+                border: Border.all(color: t.accentColor.withOpacity(0.15)),
               ),
               child: Text(
                 item.regex,
@@ -154,7 +154,7 @@ class _HistoryCard extends StatelessWidget {
               const SizedBox(width: 8),
               _MiniButton(icon: Icons.copy, label: '复制', color: t.textSecondary, onTap: onCopy),
               const SizedBox(width: 8),
-              _MiniButton(icon: Icons.delete_outline, label: '删除', color: t.errorColor.withValues(alpha: 0.7), onTap: onDelete),
+              _MiniButton(icon: Icons.delete_outline, label: '删除', color: t.errorColor.withOpacity(0.7), onTap: onDelete),
             ],
           ),
         ],

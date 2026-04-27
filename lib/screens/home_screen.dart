@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       extendBodyBehindAppBar: true,
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: t.surfaceColor.withValues(alpha: 0.7),
+        backgroundColor: t.surfaceColor.withOpacity(0.7),
         elevation: 0,
         centerTitle: true,
         title: Row(
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: t.accentColor,
-                boxShadow: [BoxShadow(color: t.neonGlow.withValues(alpha: 0.6), blurRadius: 8)],
+                boxShadow: [BoxShadow(color: t.neonGlow.withOpacity(0.6), blurRadius: 8)],
               ),
             ),
             const SizedBox(width: 8),
@@ -189,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: e.value.accentColor,
-                boxShadow: [BoxShadow(color: e.value.neonGlow.withValues(alpha: 0.4), blurRadius: 4)],
+                boxShadow: [BoxShadow(color: e.value.neonGlow.withOpacity(0.4), blurRadius: 4)],
               ),
             ),
             const SizedBox(width: 8),
