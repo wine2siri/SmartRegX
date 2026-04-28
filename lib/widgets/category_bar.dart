@@ -15,50 +15,39 @@ class CategoryBar extends StatelessWidget {
     final t = themeData;
 
     return Container(
-      height: 44,
+      height: 48,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: t.surfaceColor.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: t.chipBorder.withOpacity(0.3)),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      decoration: t.raisedBox(radius: 14),
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         children: [
-          _buildChip(context, provider, null, '全部'),
-          ...TagCategory.values.map((cat) => _buildChip(context, provider, cat, '${cat.icon} ${cat.label}')),
+          _buildChip(provider, null, '全部'),
+          ...TagCategory.values.map((cat) => _buildChip(provider, cat, '${cat.icon} ${cat.label}')),
         ],
       ),
     );
   }
 
-  Widget _buildChip(BuildContext context, TagProvider provider, TagCategory? cat, String label) {
+  Widget _buildChip(TagProvider provider, TagCategory? cat, String label) {
     final t = themeData;
     final isSelected = provider.selectedCategory == cat;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
       child: GestureDetector(
         onTap: () => provider.setCategory(cat),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: isSelected ? t.accentColor.withOpacity(0.2) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected ? t.accentColor : Colors.transparent,
-              width: 1,
-            ),
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: t.raisedButton(radius: 8, active: isSelected),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
                 color: isSelected ? t.accentColor : t.textSecondary,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
           ),

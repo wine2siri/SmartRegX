@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       extendBodyBehindAppBar: true,
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: t.surfaceColor.withOpacity(0.7),
+        backgroundColor: t.surfaceColor.withOpacity(0.85),
         elevation: 0,
         centerTitle: true,
         title: Row(
@@ -115,18 +115,33 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           _buildThemeSwitcher(t, provider),
           const SizedBox(width: 4),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: t.accentColor,
-          indicatorWeight: 2,
-          labelColor: t.accentColor,
-          unselectedLabelColor: t.textSecondary,
-          labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-          tabs: const [
-            Tab(text: '编辑'),
-            Tab(text: '解释'),
-            Tab(text: '历史'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(42),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.all(3),
+            decoration: t.insetBox(radius: 10),
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: t.accentColor,
+              unselectedLabelColor: t.textSecondary,
+              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              indicator: BoxDecoration(
+                color: t.accentColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(color: t.neonGlow.withOpacity(0.1), blurRadius: 4),
+                ],
+              ),
+              tabs: const [
+                Tab(text: '编辑'),
+                Tab(text: '解释'),
+                Tab(text: '历史'),
+              ],
+            ),
+          ),
         ),
       ),
       body: Container(

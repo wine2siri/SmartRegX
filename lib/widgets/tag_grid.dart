@@ -40,7 +40,6 @@ class TagGrid extends StatelessWidget {
           themeData: t,
           onTap: () => onTagTap(tag),
           onLongPress: () => _showTagDetail(context, tag, t),
-          onDelete: () => provider.removeTag(tag.id),
         )).toList(),
       ),
     );
@@ -53,6 +52,7 @@ class TagGrid extends StatelessWidget {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => Container(
         padding: const EdgeInsets.all(20),
+        decoration: t.raisedBox(radius: 20, color: t.surfaceColor),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,11 +61,7 @@ class TagGrid extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: t.accentColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: t.accentColor.withOpacity(0.3)),
-                  ),
+                  decoration: t.raisedButton(radius: 8, active: true),
                   child: Text(tag.label, style: TextStyle(color: t.accentColor, fontWeight: FontWeight.w600)),
                 ),
                 const Spacer(),
@@ -82,11 +78,7 @@ class TagGrid extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: t.editorBg,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: t.chipBorder),
-              ),
+              decoration: t.insetBox(radius: 10, color: t.editorBg),
               child: Text(
                 tag.pattern,
                 style: TextStyle(
@@ -117,42 +109,24 @@ class _TagCard extends StatelessWidget {
   final AppThemeData themeData;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
-  final VoidCallback onDelete;
 
   const _TagCard({
     required this.tag,
     required this.themeData,
     required this.onTap,
     required this.onLongPress,
-    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     final t = themeData;
-    final error = tag.pattern.length > 2 ? RegexValidator.validate(tag.pattern) : null;
-    final hasWarning = error != null;
 
     return GestureDetector(
       onLongPress: onLongPress,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: t.chipBg.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: hasWarning ? t.errorColor.withOpacity(0.3) : t.chipBorder.withOpacity(0.5),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: t.neonGlow.withOpacity(0.03),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
+        decoration: t.flatBox(radius: 8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -169,7 +143,7 @@ class _TagCard extends StatelessWidget {
               tag.pattern,
               style: TextStyle(
                 fontFamily: 'monospace',
-                color: t.accentColor.withOpacity(0.7),
+                color: t.accentColor.withOpacity(0.6),
                 fontSize: 10,
               ),
             ),

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../models/regex_tag.dart';
@@ -13,8 +13,8 @@ class HistoryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<TagProvider>();
     final t = themeData;
+    final provider = context.watch<TagProvider>();
     final history = provider.history;
 
     if (history.isEmpty) {
@@ -22,11 +22,11 @@ class HistoryPanel extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.history, size: 48, color: t.textSecondary.withOpacity(0.3)),
+            Icon(Icons.history, color: t.textSecondary.withOpacity(0.3), size: 48),
             const SizedBox(height: 12),
             Text('暂无历史记录', style: TextStyle(color: t.textSecondary, fontSize: 14)),
             const SizedBox(height: 4),
-            Text('保存正则后会出现在这里', style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 12)),
+            Text('保存正则后会自动记录', style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 12)),
           ],
         ),
       );
@@ -43,16 +43,6 @@ class HistoryPanel extends StatelessWidget {
           onLoad: () => onLoad(item.regex),
           onRename: (name) => provider.renameHistory(item.id, name),
           onDelete: () => provider.deleteHistory(item.id),
-          onCopy: () {
-            Clipboard.setData(ClipboardData(text: item.regex));
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('已复制', style: TextStyle(color: t.textPrimary)),
-                backgroundColor: t.surfaceColor,
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          },
         );
       },
     );
@@ -65,7 +55,6 @@ class _HistoryCard extends StatelessWidget {
   final VoidCallback onLoad;
   final ValueChanged<String> onRename;
   final VoidCallback onDelete;
-  final VoidCallback onCopy;
 
   const _HistoryCard({
     required this.item,
@@ -73,22 +62,16 @@ class _HistoryCard extends StatelessWidget {
     required this.onLoad,
     required this.onRename,
     required this.onDelete,
-    required this.onCopy,
   });
 
   @override
   Widget build(BuildContext context) {
     final t = themeData;
-    final timeStr = _formatTime(item.updatedAt);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: t.chipBg.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: t.chipBorder.withOpacity(0.3)),
-      ),
+      padding: const EdgeInsets.all(10),
+      decoration: t.raisedBox(radius: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -96,65 +79,105 @@ class _HistoryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => _showRenameDialog(context),
-                  child: Row(
-                    children: [
-                      if (item.name.isNotEmpty) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: t.accentColor.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item.name,
-                            style: TextStyle(color: t.accentColor, fontSize: 12, fontWeight: FontWeight.w600),
+                  onDoubleTap: () {
+                    final controller = TextEditingController(text: item.name);
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: t.surfaceColor,
+                        title: Text('重命名', style: TextStyle(color: t.textPrimary)),
+                        content: TextField(
+                          controller: controller,
+                          style: TextStyle(color: t.accentColor),
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            hintText: '输入名称',
+                            hintStyle: TextStyle(color: t.textSecondary),
+                            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: t.accentColorDim)),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                      ],
-                      Text(
-                        timeStr,
-                        style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 10),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text('取消', style: TextStyle(color: t.textSecondary)),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              onRename(controller.text);
+                              Navigator.pop(ctx);
+                            },
+                            child: Text('确定', style: TextStyle(color: t.accentColor)),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.edit, size: 10, color: t.textSecondary.withOpacity(0.4)),
-                    ],
+                    );
+                  },
+                  child: Text(
+                    item.name.isEmpty ? '未命名' : item.name,
+                    style: TextStyle(
+                      color: item.name.isEmpty ? t.textSecondary : t.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
+              ),
+              Text(
+                _formatTime(item.updatedAt),
+                style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 10),
               ),
             ],
           ),
           const SizedBox(height: 6),
-          GestureDetector(
-            onTap: onLoad,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: t.editorBg,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: t.accentColor.withOpacity(0.15)),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8),
+            decoration: t.insetBox(radius: 8, color: t.editorBg),
+            child: Text(
+              item.regex,
+              style: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 14,
+                color: t.accentColor,
               ),
-              child: Text(
-                item.regex,
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 15,
-                  color: t.accentColor,
-                ),
-              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _MiniButton(icon: Icons.play_arrow, label: '加载', color: t.accentColor, onTap: onLoad),
-              const SizedBox(width: 8),
-              _MiniButton(icon: Icons.copy, label: '复制', color: t.textSecondary, onTap: onCopy),
-              const SizedBox(width: 8),
-              _MiniButton(icon: Icons.delete_outline, label: '删除', color: t.errorColor.withOpacity(0.7), onTap: onDelete),
+              _SmallButton(
+                icon: Icons.play_arrow,
+                label: '加载',
+                themeData: t,
+                onTap: onLoad,
+              ),
+              const SizedBox(width: 4),
+              _SmallButton(
+                icon: Icons.copy,
+                label: '复制',
+                themeData: t,
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: item.regex));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('已复制', style: TextStyle(color: t.textPrimary)),
+                      backgroundColor: t.surfaceColor,
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 4),
+              _SmallButton(
+                icon: Icons.delete_outline,
+                label: '删除',
+                themeData: t,
+                onTap: onDelete,
+                isDestructive: true,
+              ),
             ],
           ),
         ],
@@ -163,75 +186,43 @@ class _HistoryCard extends StatelessWidget {
   }
 
   String _formatTime(DateTime dt) {
-    final now = DateTime.now();
-    final diff = now.difference(dt);
-    if (diff.inMinutes < 1) return '刚刚';
-    if (diff.inHours < 1) return '${diff.inMinutes}分钟前';
-    if (diff.inDays < 1) return '${diff.inHours}小时前';
-    if (diff.inDays < 7) return '${diff.inDays}天前';
-    return '${dt.month}/${dt.day}';
-  }
-
-  void _showRenameDialog(BuildContext context) {
-    final ctrl = TextEditingController(text: item.name);
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: themeData.surfaceColor,
-        title: Text('命名', style: TextStyle(color: themeData.textPrimary)),
-        content: TextField(
-          controller: ctrl,
-          style: TextStyle(color: themeData.textPrimary),
-          decoration: InputDecoration(
-            hintText: '给这条正则起个名字',
-            hintStyle: TextStyle(color: themeData.textSecondary),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeData.chipBorder)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeData.accentColor)),
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('取消', style: TextStyle(color: themeData.textSecondary)),
-          ),
-          TextButton(
-            onPressed: () {
-              onRename(ctrl.text.trim());
-              Navigator.pop(context);
-            },
-            child: Text('确定', style: TextStyle(color: themeData.accentColor)),
-          ),
-        ],
-      ),
-    );
+    return '${dt.month}/${dt.day} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 }
 
-class _MiniButton extends StatelessWidget {
+class _SmallButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  final Color color;
+  final AppThemeData themeData;
   final VoidCallback onTap;
+  final bool isDestructive;
 
-  const _MiniButton({
+  const _SmallButton({
     required this.icon,
     required this.label,
-    required this.color,
+    required this.themeData,
     required this.onTap,
+    this.isDestructive = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final t = themeData;
+    final color = isDestructive ? t.errorColor.withOpacity(0.7) : t.textSecondary;
+
     return GestureDetector(
       onTap: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 2),
-          Text(label, style: TextStyle(color: color, fontSize: 11)),
-        ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        decoration: t.raisedButton(radius: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 12),
+            const SizedBox(width: 2),
+            Text(label, style: TextStyle(color: color, fontSize: 9)),
+          ],
+        ),
       ),
     );
   }

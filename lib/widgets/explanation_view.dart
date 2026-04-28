@@ -18,11 +18,9 @@ class ExplanationView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.code, size: 48, color: t.textSecondary.withOpacity(0.3)),
+            Icon(Icons.auto_fix_high, color: t.textSecondary.withOpacity(0.3), size: 48),
             const SizedBox(height: 12),
-            Text('在编辑Tab中拼接正则表达式', style: TextStyle(color: t.textSecondary, fontSize: 14)),
-            const SizedBox(height: 4),
-            Text('这里将显示逐条解释', style: TextStyle(color: t.textSecondary.withOpacity(0.6), fontSize: 12)),
+            Text('输入正则后查看解释', style: TextStyle(color: t.textSecondary, fontSize: 14)),
           ],
         ),
       );
@@ -34,126 +32,95 @@ class ExplanationView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 48, color: t.errorColor.withOpacity(0.5)),
+            Icon(Icons.error_outline, color: t.errorColor.withOpacity(0.5), size: 48),
             const SizedBox(height: 12),
-            Text('正则语法有误', style: TextStyle(color: t.errorColor, fontSize: 16, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            Text('位置${error.position}: ${error.message}', style: TextStyle(color: t.textSecondary, fontSize: 13)),
+            Text('正则语法有误，无法解释', style: TextStyle(color: t.errorColor, fontSize: 14)),
           ],
         ),
       );
     }
 
-    final explanation = RegexExplainer.explainDetailed(regex);
+    final brief = RegexExplainer.explain(regex);
+    final details = RegexExplainer.explainDetailed(regex);
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: t.editorBg,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: t.accentColor.withOpacity(0.3)),
-            boxShadow: [BoxShadow(color: t.neonGlow.withOpacity(0.05), blurRadius: 8)],
-          ),
-          child: Text(
-            regex,
-            style: TextStyle(
-              fontFamily: 'monospace',
-              fontSize: 20,
-              color: t.accentColor,
-              letterSpacing: 1,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: t.surfaceColorLight.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.translate, color: t.accentColor, size: 16),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  RegexExplainer.explain(regex),
-                  style: TextStyle(color: t.textPrimary, fontSize: 14, height: 1.5),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text('逐条对照', style: TextStyle(color: t.textSecondary, fontSize: 12, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
-        ...explanation.map((item) => _ExplanationCard(
-          token: item.token,
-          meaning: item.meaning,
-          themeData: t,
-        )),
-      ],
-    );
-  }
-}
-
-class _ExplanationCard extends StatelessWidget {
-  final String token;
-  final String meaning;
-  final AppThemeData themeData;
-
-  const _ExplanationCard({
-    required this.token,
-    required this.meaning,
-    required this.themeData,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final t = themeData;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: t.chipBg.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: t.chipBorder.withOpacity(0.3)),
-      ),
-      child: Row(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            constraints: const BoxConstraints(minWidth: 60, maxWidth: 120),
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: t.insetBox(radius: 12, color: t.editorBg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  regex,
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 18,
+                    color: t.accentColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [t.accentColor.withOpacity(0.3), Colors.transparent],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  brief,
+                  style: TextStyle(color: t.textPrimary, fontSize: 14, height: 1.6),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: t.editorBg,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: t.accentColor.withOpacity(0.2)),
-            ),
+            decoration: t.raisedBox(radius: 8),
             child: Text(
-              token,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 14,
-                color: t.accentColor,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
+              '逐条对照',
+              style: TextStyle(color: t.accentColor, fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
-          const SizedBox(width: 12),
-          Icon(Icons.arrow_forward, color: t.textSecondary.withOpacity(0.4), size: 14),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              meaning,
-              style: TextStyle(color: t.textPrimary, fontSize: 13, height: 1.4),
+          const SizedBox(height: 8),
+          ...details.map((item) => Container(
+            margin: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: t.flatBox(radius: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: t.insetBox(radius: 4, color: t.editorBg),
+                  child: Text(
+                    item.token,
+                    style: TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 13,
+                      color: t.accentColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    item.meaning,
+                    style: TextStyle(color: t.textPrimary, fontSize: 13, height: 1.4),
+                  ),
+                ),
+              ],
             ),
-          ),
+          )),
         ],
       ),
     );
