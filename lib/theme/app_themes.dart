@@ -182,7 +182,7 @@ class AppThemeData {
     required this.shadowDark,
   });
 
-  bool get isLight => background.colors.first.luminance > 0.5;
+  bool get isLight => surfaceColor.computeLuminance() > 0.5;
 
   BoxDecoration raisedBox({double radius = 10, Color? color}) {
     final bg = color ?? surfaceColor;
