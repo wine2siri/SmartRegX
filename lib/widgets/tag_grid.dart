@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../models/regex_tag.dart';
 import '../providers/tag_provider.dart';
 import '../theme/app_themes.dart';
-import '../services/regex_validator.dart';
 
 class TagGrid extends StatelessWidget {
   final AppThemeData themeData;
