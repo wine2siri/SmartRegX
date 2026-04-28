@@ -2,6 +2,52 @@ import 'package:flutter/material.dart';
 
 class AppThemes {
   static const Map<String, AppThemeData> themes = {
+    'elegant': AppThemeData(
+      name: '素雅',
+      background: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFFF5F0EB), Color(0xFFEDE7E0), Color(0xFFF0EAE3)],
+      ),
+      surfaceColor: Color(0xFFE8E2DB),
+      surfaceColorLight: Color(0xFFF0EAE3),
+      accentColor: Color(0xFF5D4E37),
+      accentColorDim: Color(0xFF7A6B55),
+      textPrimary: Color(0xFF2C2418),
+      textSecondary: Color(0xFF8C7E6E),
+      errorColor: Color(0xFFC0392B),
+      successColor: Color(0xFF27AE60),
+      chipBg: Color(0xFFF0EAE3),
+      chipBorder: Color(0xFFD5CCC2),
+      categoryChipBg: Color(0xFFE8E2DB),
+      editorBg: Color(0xFFFAF7F4),
+      neonGlow: Color(0xFF5D4E37),
+      shadowLight: Color(0xFFFFFFFF),
+      shadowDark: Color(0xFFC8BFB4),
+    ),
+    'abyss': AppThemeData(
+      name: '深邃',
+      background: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF050510), Color(0xFF0A0A20), Color(0xFF080818)],
+      ),
+      surfaceColor: Color(0xFF0E0E24),
+      surfaceColorLight: Color(0xFF14142E),
+      accentColor: Color(0xFF6C8EEF),
+      accentColorDim: Color(0xFF4A6AD4),
+      textPrimary: Color(0xFFD8DCE8),
+      textSecondary: Color(0xFF6B7394),
+      errorColor: Color(0xFFE74C5F),
+      successColor: Color(0xFF4ECDC4),
+      chipBg: Color(0xFF12122A),
+      chipBorder: Color(0xFF1E1E3A),
+      categoryChipBg: Color(0xFF0E0E24),
+      editorBg: Color(0xFF08081A),
+      neonGlow: Color(0xFF6C8EEF),
+      shadowLight: Color(0xFF1E1E40),
+      shadowDark: Color(0xFF030308),
+    ),
     'midnight': AppThemeData(
       name: '午夜',
       background: LinearGradient(
@@ -136,6 +182,8 @@ class AppThemeData {
     required this.shadowDark,
   });
 
+  bool get isLight => background.colors.first.luminance > 0.5;
+
   BoxDecoration raisedBox({double radius = 10, Color? color}) {
     final bg = color ?? surfaceColor;
     return BoxDecoration(
@@ -143,12 +191,12 @@ class AppThemeData {
       borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
-          color: shadowLight.withOpacity(0.5),
+          color: shadowLight.withOpacity(isLight ? 0.8 : 0.5),
           offset: const Offset(-2, -2),
           blurRadius: 4,
         ),
         BoxShadow(
-          color: shadowDark.withOpacity(0.8),
+          color: shadowDark.withOpacity(isLight ? 0.3 : 0.8),
           offset: const Offset(2, 2),
           blurRadius: 6,
         ),
@@ -163,12 +211,12 @@ class AppThemeData {
       borderRadius: BorderRadius.circular(radius),
       boxShadow: [
         BoxShadow(
-          color: shadowDark.withOpacity(0.9),
+          color: shadowDark.withOpacity(isLight ? 0.25 : 0.9),
           offset: const Offset(-2, -2),
           blurRadius: 4,
         ),
         BoxShadow(
-          color: shadowLight.withOpacity(0.3),
+          color: shadowLight.withOpacity(isLight ? 0.6 : 0.3),
           offset: const Offset(2, 2),
           blurRadius: 4,
         ),
@@ -181,23 +229,23 @@ class AppThemeData {
     return BoxDecoration(
       color: bg,
       borderRadius: BorderRadius.circular(radius),
-      border: border ?? Border.all(color: chipBorder.withOpacity(0.3), width: 0.5),
+      border: border ?? Border.all(color: chipBorder.withOpacity(isLight ? 0.5 : 0.3), width: 0.5),
     );
   }
 
   BoxDecoration raisedButton({double radius = 8, bool active = false}) {
     return BoxDecoration(
-      color: active ? accentColor.withOpacity(0.15) : surfaceColor,
+      color: active ? accentColor.withOpacity(isLight ? 0.12 : 0.15) : surfaceColor,
       borderRadius: BorderRadius.circular(radius),
       border: active ? Border.all(color: accentColor.withOpacity(0.5), width: 1) : null,
       boxShadow: active
           ? [
-              BoxShadow(color: neonGlow.withOpacity(0.15), blurRadius: 6, offset: const Offset(0, 0)),
-              BoxShadow(color: shadowDark.withOpacity(0.6), offset: const Offset(1, 1), blurRadius: 3),
+              BoxShadow(color: neonGlow.withOpacity(isLight ? 0.1 : 0.15), blurRadius: 6, offset: const Offset(0, 0)),
+              BoxShadow(color: shadowDark.withOpacity(isLight ? 0.15 : 0.6), offset: const Offset(1, 1), blurRadius: 3),
             ]
           : [
-              BoxShadow(color: shadowLight.withOpacity(0.4), offset: const Offset(-1, -1), blurRadius: 3),
-              BoxShadow(color: shadowDark.withOpacity(0.7), offset: const Offset(1, 2), blurRadius: 4),
+              BoxShadow(color: shadowLight.withOpacity(isLight ? 0.7 : 0.4), offset: const Offset(-1, -1), blurRadius: 3),
+              BoxShadow(color: shadowDark.withOpacity(isLight ? 0.2 : 0.7), offset: const Offset(1, 2), blurRadius: 4),
             ],
     );
   }

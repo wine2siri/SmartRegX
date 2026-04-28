@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/regex_tag.dart';
 
 class StorageService {
-  static const _tagsKey = 'regex_tags_v2';
+  static const _tagsKey = 'regex_tags_v3';
   static const _timeFilterKey = 'time_filter_days';
   static const _historyKey = 'regex_history';
   static const _themeKey = 'app_theme';
@@ -131,5 +131,17 @@ class StorageService {
         RegexTag(id: 'm6', label: '时间', pattern: '\\d{2}:\\d{2}:\\d{2}', category: TagCategory.common, description: '匹配HH:MM:SS格式时间'),
         RegexTag(id: 'm7', label: 'URL', pattern: 'https?://[\\w./%-]+', category: TagCategory.common, description: '匹配HTTP/HTTPS网址'),
         RegexTag(id: 'm8', label: '中文名', pattern: '[\\u4e00-\\u9fa5]{2,4}', category: TagCategory.common, description: '匹配2-4个中文字符的姓名'),
+        RegexTag(id: 'm9', label: '域名', pattern: '[\\w-]+(\\.[\\w-]+)+', category: TagCategory.common, description: '匹配域名格式，如example.com、sub.domain.cn'),
+        RegexTag(id: 'm10', label: '常见域名后缀', pattern: '\\.(com|cn|net|org|io|dev|app|co|me|info|biz|cc|tv)', category: TagCategory.common, description: '匹配常见顶级域名后缀'),
+        RegexTag(id: 'm11', label: '国内域名后缀', pattern: '\\.(com\\.cn|net\\.cn|org\\.cn|gov\\.cn|edu\\.cn)', category: TagCategory.common, description: '匹配中国二级域名后缀'),
+        RegexTag(id: 'm12', label: '视频后缀', pattern: '\\.(mp4|avi|mkv|mov|wmv|flv|webm|m4v|3gp)', category: TagCategory.common, description: '匹配常见视频文件扩展名'),
+        RegexTag(id: 'm13', label: '图片后缀', pattern: '\\.(jpg|jpeg|png|gif|bmp|webp|svg|ico|tiff)', category: TagCategory.common, description: '匹配常见图片文件扩展名'),
+        RegexTag(id: 'm14', label: '音频后缀', pattern: '\\.(mp3|wav|flac|aac|ogg|wma|m4a)', category: TagCategory.common, description: '匹配常见音频文件扩展名'),
+        RegexTag(id: 'm15', label: '文档后缀', pattern: '\\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv)', category: TagCategory.common, description: '匹配常见文档文件扩展名'),
+        RegexTag(id: 'm16', label: '压缩包后缀', pattern: '\\.(zip|rar|7z|tar|gz|bz2)', category: TagCategory.common, description: '匹配常见压缩文件扩展名'),
+        RegexTag(id: 'm17', label: 'HTML标签', pattern: '<[^>]+>', category: TagCategory.common, description: '匹配HTML标签，如<div>、</span>'),
+        RegexTag(id: 'm18', label: '十六进制颜色', pattern: '#[0-9a-fA-F]{3,8}', category: TagCategory.common, description: '匹配CSS十六进制颜色值，如#fff、#00F5FF'),
+        RegexTag(id: 'm19', label: '中英文逗号', pattern: '[,，]', category: TagCategory.common, description: '匹配中文或英文逗号'),
+        RegexTag(id: 'm20', label: '中英文引号', pattern: '["""]', category: TagCategory.common, description: '匹配中文或英文双引号'),
       ];
 }

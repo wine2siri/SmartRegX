@@ -55,7 +55,7 @@ class RegexExplainer {
         } else if (next == 'r') {
           tokens.add(_Token(_TokenType.escaped, '\\r'));
           i += 2;
-        } else if (next == '1' || next == '2' || next == '3') {
+        } else if (int.tryParse(next) != null && int.parse(next) >= 1 && int.parse(next) <= 9) {
           tokens.add(_Token(_TokenType.backref, '\\$next'));
           i += 2;
         } else {
@@ -140,44 +140,44 @@ class RegexExplainer {
   static String _explainToken(_Token token) {
     switch (token.type) {
       case _TokenType.anchor:
-        if (token.value == '^') return '以...开头';
-        if (token.value == r'$') return '以...结尾';
+        if (token.value == '^') return '从开头匹配';
+        if (token.value == r'$') return '到结尾为止';
         return token.value;
       case _TokenType.shorthand:
         return _explainShorthand(token.value);
       case _TokenType.escaped:
+        if (token.value == '\\n') return '换行';
+        if (token.value == '\\t') return 'Tab缩进';
+        if (token.value == '\\r') return '回车';
         final ch = token.value.length > 1 ? token.value[1] : token.value;
-        if (token.value == '\\n') return '换行符';
-        if (token.value == '\\t') return '制表符';
-        if (token.value == '\\r') return '回车符';
-        return '字符"$ch"';
+        return '普通字符$ch';
       case _TokenType.charClass:
         return _explainCharClass(token.value);
       case _TokenType.group:
         return _explainGroup(token.value);
       case _TokenType.alternation:
-        return '或';
+        return '或者';
       case _TokenType.dot:
-        return '任意字符';
+        return '任意一个字符（除换行外）';
       case _TokenType.quantifier:
         return _explainQuantifier(token.value);
       case _TokenType.literal:
-        return '字符"${token.value}"';
+        return '普通字符"${token.value}"';
       case _TokenType.backref:
-        return '引用第${token.value[1]}个分组';
+        return '和第${token.value[1]}个括号里匹配到的一样的内容';
     }
   }
 
   static String _explainShorthand(String value) {
     const map = {
-      '\\d': '任意数字',
-      '\\D': '非数字',
-      '\\w': '字母数字下划线',
-      '\\W': '非字母数字下划线',
-      '\\s': '空白符',
-      '\\S': '非空白符',
-      '\\b': '单词边界',
-      '\\B': '非单词边界',
+      '\\d': '一个数字（0-9）',
+      '\\D': '一个非数字字符',
+      '\\w': '一个字母、数字或下划线',
+      '\\W': '一个非字母数字下划线的字符',
+      '\\s': '一个空白（空格、Tab、换行等）',
+      '\\S': '一个非空白字符',
+      '\\b': '单词的边界位置',
+      '\\B': '不是单词边界的位置',
     };
     return map[value] ?? value;
   }
@@ -190,78 +190,86 @@ class RegexExplainer {
       negated = true;
       inner = inner.substring(1);
     }
-    final buf = StringBuffer();
-    if (negated) buf.write('非');
+
+    String result;
 
     if (inner == r'\u4e00-\u9fa5' || inner == 'u4e00-u9fa5') {
-      buf.write('中文字符');
+      result = '一个中文字';
     } else if (inner == 'a-zA-Z') {
-      buf.write('任意字母');
+      result = '一个英文字母（大小写都行）';
     } else if (inner == 'a-z') {
-      buf.write('小写字母');
+      result = '一个小写英文字母';
     } else if (inner == 'A-Z') {
-      buf.write('大写字母');
+      result = '一个大写英文字母';
     } else if (inner == '0-9') {
-      buf.write('数字');
+      result = '一个数字';
+    } else if (inner == 'a-zA-Z0-9') {
+      result = '一个字母或数字';
+    } else if (inner == 'a-zA-Z0-9_-') {
+      result = '一个字母、数字、下划线或横线';
     } else if (inner.contains('-') && !inner.startsWith('-')) {
       final parts = inner.split('-');
       if (parts.length == 2) {
-        buf.write('${parts[0]}到${parts[1]}之间的字符');
+        result = '${parts[0]}到${parts[1]}之间的一个字符';
       } else {
-        buf.write('[$inner]中的任意一个字符');
+        result = '[$inner]里的任意一个';
       }
     } else if (inner.length == 1) {
-      buf.write('字符"$inner"');
+      result = '字符"$inner"';
     } else {
-      buf.write('[$inner]中的任意一个字符');
+      result = '[$inner]里的任意一个';
     }
-    return buf.toString();
+
+    if (negated) {
+      result = '不是$result';
+    }
+    return result;
   }
 
   static String _explainGroup(String value) {
     if (value.startsWith('(?:')) {
       final inner = value.substring(3, value.length - 1);
-      return '非捕获分组（${explain(inner)}）';
+      return '（${explain(inner)}），但不记录匹配结果';
     }
     if (value.startsWith('(?=')) {
       final inner = value.substring(3, value.length - 1);
-      return '前面有（后面跟着${explain(inner)}）';
+      return '后面必须跟着"${explain(inner)}"，但不消耗字符';
     }
     if (value.startsWith('(?!')) {
       final inner = value.substring(3, value.length - 1);
-      return '前面没有（后面不跟着${explain(inner)}）';
+      return '后面不能跟着"${explain(inner)}"';
     }
     if (value.startsWith('(?<=')) {
       final inner = value.substring(4, value.length - 1);
-      return '后面有（前面是${explain(inner)}）';
+      return '前面必须是"${explain(inner)}"';
     }
     if (value.startsWith('(?<!')) {
       final inner = value.substring(4, value.length - 1);
-      return '后面没有（前面不是${explain(inner)}）';
+      return '前面不能是"${explain(inner)}"';
     }
     if (value.startsWith('(?P<')) {
       final nameEnd = value.indexOf('>');
       if (nameEnd != -1) {
         final name = value.substring(4, nameEnd);
         final inner = value.substring(nameEnd + 1, value.length - 1);
-        return '命名分组"$name"（${explain(inner)}）';
+        return '取名叫"$name"的分组，里面是${explain(inner)}';
       }
     }
     final inner = value.substring(1, value.length - 1);
-    return '分组（${explain(inner)}）';
+    return '（${explain(inner)}）';
   }
 
   static String _explainQuantifier(String value) {
-    if (value == '*') return '出现0次或多次';
-    if (value == '+') return '出现1次或多次';
-    if (value == '?') return '出现0次或1次';
+    if (value == '*') return '可以没有，也可以有很多个';
+    if (value == '+') return '至少出现1次，可以更多';
+    if (value == '?') return '可有可无（最多1次）';
     final m = RegExp(r'^\{(\d+)(,(\d*)?)?\}$').firstMatch(value);
     if (m != null) {
       final min = m.group(1)!;
       final hasComma = m.group(2) != null;
       final max = m.group(3);
       if (!hasComma) return '恰好出现$min次';
-      if (max == null || max.isEmpty) return '至少出现$min次';
+      if (max == null || max.isEmpty) return '至少$min次，上不封顶';
       return '出现$min到$max次';
     }
     return value;
