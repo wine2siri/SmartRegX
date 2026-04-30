@@ -306,7 +306,6 @@ class RegexAnalyzer {
     final sortedKeys = groups.keys.toList()..sort();
     var lastPos = 0;
     for (final key in sortedKeys) {
-      final val = groups[key]!;
       if (key > lastPos + 1) {
         replacementBuf.write(targets.first.substring(lastPos, lastPos + (key - lastPos - 1)));
       }
@@ -360,8 +359,6 @@ class RegexAnalyzer {
     if (sources.length >= 2) {
       final s0 = sources[0];
       final t0 = targets[0];
-      final s1 = sources[1];
-      final t1 = targets[1];
 
       var removed = <String>[];
       var added = <String>[];
