@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/regex_tag.dart';
 
 class StorageService {
-  static const _tagsKey = 'regex_tags_v3';
+  static const _tagsKey = 'regex_tags_v4';
   static const _timeFilterKey = 'time_filter_days';
   static const _historyKey = 'regex_history';
   static const _themeKey = 'app_theme';
@@ -143,5 +143,7 @@ class StorageService {
         RegexTag(id: 'm18', label: '十六进制颜色', pattern: '#[0-9a-fA-F]{3,8}', category: TagCategory.common, description: '匹配CSS十六进制颜色值，如#fff、#00F5FF'),
         RegexTag(id: 'm19', label: '中英文逗号', pattern: '[,，]', category: TagCategory.common, description: '匹配中文或英文逗号'),
         RegexTag(id: 'm20', label: '中英文引号', pattern: '["""]', category: TagCategory.common, description: '匹配中文或英文双引号'),
+        RegexTag(id: 'm21', label: '霓虹车牌', pattern: '[A-Za-z]{2,5}-\\d{3,5}', category: TagCategory.common, description: '匹配日本番号格式，如ABC-123、SSIS-001'),
+        RegexTag(id: 'm22', label: '车牌号', pattern: '[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤川青藏琼宁][A-Z][A-Z0-9]{5}', category: TagCategory.common, description: '匹配中国大陆车牌号'),
       ];
 }

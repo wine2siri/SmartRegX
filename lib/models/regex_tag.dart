@@ -99,6 +99,7 @@ class RegexHistory {
   final String id;
   String regex;
   String name;
+  bool isFavorite;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -106,6 +107,7 @@ class RegexHistory {
     required this.id,
     required this.regex,
     this.name = '',
+    this.isFavorite = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : createdAt = createdAt ?? DateTime.now(),
@@ -115,6 +117,7 @@ class RegexHistory {
         'id': id,
         'regex': regex,
         'name': name,
+        'isFavorite': isFavorite,
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
       };
@@ -123,6 +126,7 @@ class RegexHistory {
         id: json['id'] as String,
         regex: json['regex'] as String,
         name: json['name'] as String? ?? '',
+        isFavorite: json['isFavorite'] as bool? ?? false,
         createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'] as String)
             : DateTime.now(),
@@ -145,6 +149,7 @@ class RegexHistory {
     String? id,
     String? regex,
     String? name,
+    bool? isFavorite,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) =>
@@ -152,6 +157,7 @@ class RegexHistory {
         id: id ?? this.id,
         regex: regex ?? this.regex,
         name: name ?? this.name,
+        isFavorite: isFavorite ?? this.isFavorite,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );

@@ -8,6 +8,7 @@ import '../widgets/regex_editor_bar.dart';
 import '../widgets/tag_grid.dart';
 import '../widgets/explanation_view.dart';
 import '../widgets/history_panel.dart';
+import '../widgets/analysis_panel.dart';
 
 class HomeScreen extends StatefulWidget {
   final AppThemeData themeData;
@@ -21,11 +22,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   String _regex = '';
   late TabController _tabController;
+  final GlobalKey<_AnalysisPanelWrapperState> _analysisKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() {});
@@ -40,7 +42,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _onTagTap(RegexTag tag) {
-    setState(() => _regex += tag.pattern);
+    if (_tabController.index == 3) {
+      _analysisKey.currentState?.insertToSource(tag.pattern);
+    } else {
+      setState(() => _regex += tag.pattern);
+    }
     final provider = context.read<TagProvider>();
     provider.recordUsage(tag.id);
   }
@@ -71,6 +77,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _loadFromHistory(String regex) {
+    setState(() => _regex = regex);
+    _tabController.animateTo(0);
+  }
+
+  void _applyRegexFromAnalysis(String regex) {
     setState(() => _regex = regex);
     _tabController.animateTo(0);
   }
@@ -127,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               indicatorSize: TabBarIndicatorSize.tab,
               labelColor: t.accentColor,
               unselectedLabelColor: t.textSecondary,
-              labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               indicator: BoxDecoration(
                 color: t.accentColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(8),
@@ -139,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 Tab(text: '编辑'),
                 Tab(text: '解释'),
                 Tab(text: '历史'),
+                Tab(text: '分析'),
               ],
             ),
           ),
@@ -156,17 +168,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _buildEditorTab(t, provider),
                     ExplanationView(regex: _regex, themeData: t),
                     HistoryPanel(themeData: t, onLoad: _loadFromHistory),
+                    _AnalysisPanelWrapper(
+                      key: _analysisKey,
+                      themeData: t,
+                      onApplyRegex: _applyRegexFromAnalysis,
+                    ),
                   ],
                 ),
               ),
-              RegexEditorBar(
-                regex: _regex,
-                themeData: t,
-                onBackspace: _onBackspace,
-                onClear: _onClear,
-                onSave: _onSave,
-                onChanged: _onRegexChanged,
-              ),
+              if (_tabController.index != 3)
+                RegexEditorBar(
+                  regex: _regex,
+                  themeData: t,
+                  onBackspace: _onBackspace,
+                  onClear: _onClear,
+                  onSave: _onSave,
+                  onChanged: _onRegexChanged,
+                ),
             ],
           ),
         ),
@@ -218,6 +236,37 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ],
         ),
       )).toList(),
+    );
+  }
+}
+
+class _AnalysisPanelWrapper extends StatefulWidget {
+  final AppThemeData themeData;
+  final ValueChanged<String> onApplyRegex;
+
+  const _AnalysisPanelWrapper({super.key, required this.themeData, required this.onApplyRegex});
+
+  @override
+  State<_AnalysisPanelWrapper> createState() => _AnalysisPanelWrapperState();
+}
+
+class _AnalysisPanelWrapperState extends State<_AnalysisPanelWrapper> {
+  final _sourceController = TextEditingController();
+
+  void insertToSource(String text) {
+    final current = _sourceController.text;
+    if (current.isNotEmpty && !current.endsWith('\n')) {
+      _sourceController.text = '$current\n$text';
+    } else {
+      _sourceController.text = '$current$text';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnalysisPanel(
+      themeData: widget.themeData,
+      onApplyRegex: widget.onApplyRegex,
     );
   }
 }

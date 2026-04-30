@@ -171,6 +171,16 @@ class TagProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> toggleFavoriteHistory(String id) async {
+    final idx = _history.indexWhere((h) => h.id == id);
+    if (idx == -1) return;
+    _history[idx] = _history[idx].copyWith(isFavorite: !_history[idx].isFavorite);
+    await _storage.saveHistory(_history);
+    notifyListeners();
+  }
+
+  List<RegexHistory> get favoriteHistory => _history.where((h) => h.isFavorite).toList();
+
   Future<void> deleteHistory(String id) async {
     _history.removeWhere((h) => h.id == id);
     await _storage.saveHistory(_history);
